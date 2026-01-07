@@ -1,9 +1,10 @@
 export type Language = 'et' | 'en';
 
 export interface Question {
-  id: string;
-  question: Record<Language, string>;
-  answers: Record<Language, string[]>;
+  id: string; // question ID
+  question: Record<Language, string>; // question text
+  image?: string; // optional image filename
+  answers: Record<Language, string[]>; // array of 5 answers
   correctAnswer: number; // index of correct answer (0-4)
 }
 
@@ -11,12 +12,13 @@ export const questions: Record<string, Question> = {
   '1': {
     id: '1',
     question: {
-      et: 'Mis aastal asutati Kadrioru kunstimuuseum?',
-      en: 'What year was the Kadriorg Art Museum founded?'
+      et: 'Mis aasta?',
+      en: 'What year?'
     },
+    image: 'loss.png',
     answers: {
-      et: ['1919', '1921', '1925', '1930', '1945'],
-      en: ['1919', '1921', '1925', '1930', '1945']
+      et: ['1919', '1930', '1960', '1978', '1980'],
+      en: ['1919', '1930', '1960', '1978', '1980']
     },
     correctAnswer: 1
   },

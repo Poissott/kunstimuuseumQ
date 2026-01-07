@@ -1,10 +1,14 @@
 import { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Image } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { questions, languageNames } from '@/constants/questions';
 import { useLanguage } from '@/contexts/LanguageContext';
+
+const imageMap: Record<string, any> = {
+  'loss.png': require('@/assets/images/loss.png'),
+};
 
 export default function QuestionScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -17,15 +21,17 @@ export default function QuestionScreen() {
 
   if (!question) {
     return (
-      <ThemedView style={styles.container}>
-        <ThemedText type="title">Question Not Found</ThemedText>
-        <ThemedText>Question ID: {id}</ThemedText>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>Go Back</Text>
-        </TouchableOpacity>
-      </ThemedView>
+      <SafeAreaView style={styles.safeArea}>
+        <ThemedView style={styles.container}>
+          <ThemedText type="title">Question Not Found</ThemedText>
+          <ThemedText>Question ID: {id}</ThemedText>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.back()}>
+            <Text style={styles.backButtonText}>Go Back</Text>
+          </TouchableOpacity>
+        </ThemedView>
+      </SafeAreaView>
     );
   }
 
@@ -46,10 +52,11 @@ export default function QuestionScreen() {
       return [styles.answerButton, styles.wrongAnswer];
     }
     
-    return [styles.answerButton, styles.disabledAnswer];
-  };
+  return [styles.answerButton, styles.disabledAnswer];
+};
 
-  return (
+return (
+  <SafeAreaView style={styles.safeArea}>
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       {/* Language Selector */}
       <View style={styles.languageSelector}>
@@ -78,6 +85,13 @@ export default function QuestionScreen() {
         <ThemedText type="title" style={styles.questionText}>
           {question.question[language]}
         </ThemedText>
+        {question.image && imageMap[question.image] && (
+          <Image
+            source={imageMap[question.image]}
+            style={styles.questionImage}
+            resizeMode="contain"
+          />
+        )}
       </ThemedView>
 
       <View style={styles.answersContainer}>
@@ -130,13 +144,18 @@ export default function QuestionScreen() {
                 </Text>
                 </TouchableOpacity>
             </View>
-          ))
-      }
+          )
+      )}
     </ScrollView>
-  );
+  </SafeAreaView>
+);
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#7c4479ff',
+  },
   container: {
     flex: 1,
     backgroundColor: '#7c4479ff',
@@ -162,6 +181,13 @@ const styles = StyleSheet.create({
   questionText: {
     fontSize: 22,
     lineHeight: 32,
+  },
+  questionImage: {
+    width: '100%',
+    height: 200,
+    marginTop: 16,
+    borderRadius: 8,
+    backgroundColor: '#e0e0e0',
   },
   answersContainer: {
     gap: 12,
@@ -267,20 +293,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#521d63ff',
     borderWidth: 2,
-    borderColor: '#e0e0e0',
+    borderColor: '#521d63ff',
   },
   languageButtonActive: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+    backgroundColor: '#fff',
+    borderColor: '#fff',
   },
   languageButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#666',
+    color: '#fff',
   },
   languageButtonTextActive: {
-    color: '#fff',
+    color: '#666',
   },
 });
