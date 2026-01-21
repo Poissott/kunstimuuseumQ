@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Image } from 'react-native';
+import { useRef, useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Image, Animated } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -16,6 +16,9 @@ export default function QuestionScreen() {
   const { language, setLanguage } = useLanguage();
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
+  const scrollIndicatorAnim = useRef(new Animated.Value(0)).current;
+  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   const question = questions[id as string];
 
@@ -41,6 +44,36 @@ export default function QuestionScreen() {
     setIsAnswered(true);
   };
 
+  useEffect(() => {
+    if (isAnswered) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(scrollIndicatorAnim, {
+            toValue: 10,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scrollIndicatorAnim, {
+            toValue: 0,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    }
+  }, [isAnswered]);
+
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+    { useNativeDriver: false }
+  );
+
+  const scrollIndicatorOpacity = scrollY.interpolate({
+    inputRange: [0, 200],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+
   const getAnswerStyle = (index: number) => {
     if (!isAnswered) return styles.answerButton;
     
@@ -57,7 +90,12 @@ export default function QuestionScreen() {
 
 return (
   <SafeAreaView style={styles.safeArea}>
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView 
+      ref={scrollViewRef}
+      style={styles.container} 
+      contentContainerStyle={styles.contentContainer}
+      onScroll={handleScroll}
+      scrollEventThrottle={16}>
       {/* Language Selector */}
       <View style={styles.languageSelector}>
         {(['et', 'en'] as const).map((lang) => (
@@ -147,6 +185,23 @@ return (
           )
       )}
     </ScrollView>
+    
+    {isAnswered && (
+      <Animated.View 
+        style={[
+          styles.scrollIndicatorFixed,
+          { 
+            opacity: scrollIndicatorOpacity,
+            transform: [{ translateY: scrollIndicatorAnim }]
+          }
+        ]}
+        pointerEvents="none">
+        <Text style={styles.scrollIndicatorText}>↓</Text>
+        <ThemedText style={styles.scrollHintText}>
+          {language === 'et' ? 'Jätka' : 'Continue'}
+        </ThemedText>
+      </Animated.View>
+    )}
   </SafeAreaView>
 );
 }
@@ -308,5 +363,29 @@ const styles = StyleSheet.create({
   },
   languageButtonTextActive: {
     color: '#666',
+  },
+  scrollIndicatorFixed: {
+    position: 'absolute',
+    bottom: 90,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  scrollIndicatorText: {
+    fontSize: 32,
+    color: '#fff',
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  scrollHintText: {
+    fontSize: 16,
+    color: '#fff',
+    marginTop: 4,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
 });
