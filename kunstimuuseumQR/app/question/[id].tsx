@@ -7,7 +7,7 @@ import { questions, languageNames } from '@/constants/questions';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const imageMap: Record<string, any> = {
-  'loss.png': require('@/assets/images/loss.png'),
+  'Chateau_Montsoreau_Loire.jpg': require('@/assets/images/Chateau_Montsoreau_Loire.jpg'),
 };
 
 export default function QuestionScreen() {
@@ -22,6 +22,7 @@ export default function QuestionScreen() {
 
   const question = questions[id as string];
 
+  // Error handling for invalid question ID
   if (!question) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -44,6 +45,7 @@ export default function QuestionScreen() {
     setIsAnswered(true);
   };
 
+  // Scroll indicator animation effect after answering
   useEffect(() => {
     if (isAnswered) {
       Animated.loop(
@@ -116,6 +118,7 @@ return (
         ))}
       </View>
 
+      {/* Question and image section */}  
       <ThemedView style={styles.questionContainer}>
         <ThemedText type="subtitle" style={styles.questionNumber}>
           {language === 'et' ? 'Küsimus' : 'Question'} {id}
@@ -132,6 +135,7 @@ return (
         )}
       </ThemedView>
 
+      {/* Answer selection section */}
       <View style={styles.answersContainer}>
         {question.answers[language].map((answer, index) => (
           <TouchableOpacity
@@ -152,6 +156,7 @@ return (
         ))}
       </View>
 
+      {/* Result feedback section */}
       {isAnswered && (
           selectedAnswer === question.correctAnswer ? (
             <View style={styles.resultContainerCorrect}>
@@ -186,6 +191,7 @@ return (
       )}
     </ScrollView>
     
+    {/* Scroll indicator after answering */}
     {isAnswered && (
       <Animated.View 
         style={[

@@ -12,13 +12,13 @@ export const questions: Record<string, Question> = {
   '1': {
     id: '1',
     question: {
-      et: 'Mis aasta?',
-      en: 'What year?'
+      et: 'Mis näidisküsimus?',
+      en: 'What sample question?'
     },
-    image: 'loss.png',
+    image: 'Chateau_Montsoreau_Loire.jpg',
     answers: {
-      et: ['1919', '1930', '1960', '1978', '1980'],
-      en: ['1919', '1930', '1960', '1978', '1980']
+      et: ['Valik 1', 'Valik 2', 'Valik 3', 'Valik 4', 'Valik 5'],
+      en: ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5']
     },
     correctAnswer: 1
   },

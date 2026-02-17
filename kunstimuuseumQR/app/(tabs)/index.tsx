@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 export default function Question() {
   const router = useRouter();
 
+  // Hardcoded question IDs for development/testing. In production, the questions are accessed via QR code scanning.
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <ThemedText type="title" style={styles.title}>
